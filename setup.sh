@@ -3,16 +3,52 @@ set -e
 
 echo "=== Pico Universal Access: Full Environment Setup ==="
 
+# Initialize variables for Wi-Fi credentials
+WIFI_SSID=""
+WIFI_PASSWORD=""
+
+# Parse command-line arguments for credentials and help
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -s|--ssid) WIFI_SSID="$2"; shift 2 ;;
+        -p|--password) WIFI_PASSWORD="$2"; shift 2 ;;
+        -h|--help)
+            echo "Usage: ./setup.sh [options]"
+            echo "Options:"
+            echo "  -s, --ssid <ssid>       Wi-Fi Network SSID"
+            echo "  -p, --password <pwd>    Wi-Fi Network Password"
+            echo "  -h, --help              Display this help message"
+            exit 0
+            ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+    esac
+done
+
+# Handle secrets.h logic based on file presence and parameters
+if [ -f "secrets.h" ]; then
+    echo "secrets.h already exists. Using existing configuration."
+else
+    if [ -n "$WIFI_SSID" ] && [ -n "$WIFI_PASSWORD" ]; then
+        echo "Generating secrets.h from command-line arguments..."
+        echo "#define WIFI_SSID       \"$WIFI_SSID\"" > secrets.h
+        echo "#define WIFI_PASSWORD   \"$WIFI_PASSWORD\"" >> secrets.h
+    else
+        echo "Error: secrets.h is missing and Wi-Fi credentials were not provided."
+        echo "Usage: ./setup.sh -s <SSID> -p <PASSWORD>"
+        exit 1
+    fi
+fi
+
 # 1. Clone FreeRTOS Kernel 
 if [ -d "FreeRTOS-Kernel" ]; then
-  rmdir FreeRTOS-Kernel
+  rm -rf FreeRTOS-Kernel
 fi
     echo "Cloning FreeRTOS Kernel..."
     git clone --recursive https://github.com/FreeRTOS/FreeRTOS-Kernel.git --depth 1
 
 # 2. Clone open62541 
 if [ -d "open62541" ]; then
-  rmdir open62541
+  rm -rf open62541
 fi
     echo "Cloning open62541..."
     git clone --recursive https://github.com/open62541/open62541.git --depth 1
@@ -48,8 +84,15 @@ fi
 ./.venv/bin/pip install --upgrade pip --quiet
 ./.venv/bin/pip install opcua-client asyncua --quiet
 
-if [ ! -f "secrets.h" ]; then
-    echo "#define WIFI_SSID       \"YourSSID\"" > secrets.h
-    echo "#define WIFI_PASSWORD   \"YourWifiPWD\"" >> secrets.h
-fi
 echo "=== Setup Complete. All dependencies and build hooks are in place. ==="
+
+# Optional prompt to run build.sh upon successful completion
+read -p "Setup complete. Would you like to run build.sh now? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [ -f "./build.sh" ]; then
+        ./build.sh
+    else
+        echo "Error: build.sh not found in the current directory."
+    fi
+fi
