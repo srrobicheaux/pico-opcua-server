@@ -1,0 +1,32 @@
+# Secrets and credentials
+secret*
+
+# CMake and build artifacts
+build/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+*.cmake
+install_manifest.txt
+
+# Compiled object files and binaries
+*.o
+*.obj
+*.elf
+*.bin
+*.uf2
+*.hex
+*.map
+*.dis
+
+# IDE and Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.ccls-cache/
+
+# OS generated files
+.DS_Store
+Thumbs.db
