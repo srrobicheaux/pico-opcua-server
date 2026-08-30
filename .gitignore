@@ -1,6 +1,10 @@
 # Secrets and credentials
 secret*
 
+# Downloaded/Cloned Dependencies
+FreeRTOS-Kernel/
+open62541/
+
 # CMake and build artifacts
 build/
 CMakeCache.txt
