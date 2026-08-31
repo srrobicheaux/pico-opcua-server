@@ -35,24 +35,26 @@ Once connected to your Wi-Fi network, the Pico exposes the following Node IDs to
 
 ## ⚙️ Usage: **Clone => Setup => Build => Flash => Test**
 
-### 1. Clone => Setup
+### 1. Clone & Setup
+
+#### ./setup.sh
+./setup.sh should be safe to run multiple times. However, it probably only needs to be run once. If it is rerun, it assumes that you want to start fresh with the dependencies and reclones them from github.
+
+This script pulls the FreeRTOS and open62541 dependencies and applies a custom patch to the open62541 event loop to prevent the server from exiting during transient Wi-Fi drops.
+
+It also creates a secrets.h file for WiFi credentials.
+*(This file is git-ignored for your security.)*
+
+It will prompt to build once completed.
+=== Installing and setting up via ./setup.sh
    ```bash
 git clone https://github.com/srrobicheaux/pico-opcua-server.git
 cd pico-opcua-server
 chmod +x ./setup.sh
 ./setup.sh -s [WiFi_SSID] -p [WiFi_Password]
 ```
-#### Setup script:
-Setup should be safe to run multiple times. However, it probably only needs to be run once. If it is rerun, it assumes that you want to start fresh with the dependencies and reclones them from github.
 
-This script pulls the FreeRTOS and open62541 dependencies and applies a custom patch to the open62541 event loop to prevent the server from exiting during transient Wi-Fi drops.
-
-It also creates a secrets.h file for WiFi credentials.
-(this file is git-ignored for your security):
-
-It will prompt to build once completed.
-
-### 2. Build => Flash
+### 2. Build & Flash
 #### Build
 ***Caution:*** *build.sh will often remove and recreate the ./build directory used by cmake.*
 `./build.sh`
