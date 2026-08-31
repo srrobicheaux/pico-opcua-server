@@ -57,7 +57,9 @@ chmod +x ./setup.sh
 ### 2. Build & Flash
 #### Build
 ***Caution:*** *build.sh will often remove and recreate the ./build directory used by cmake.*
-`./build.sh`
+
+````bash
+./build.sh```
 
 There is at least **500k** lines of code that will compile. Be patient. 
 If the build fails for some reason, you can rerun ./build.sh 
