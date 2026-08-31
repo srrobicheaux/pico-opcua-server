@@ -141,24 +141,24 @@ The project contains multiple bash scripts for testing the robustness of your op
    >   -e, --endpoint <url>   OPC UA endpoint IP:Port (default: 192.168.1.104:4840)
    >   -n, --node <node_id>   Target Node ID (default: ns=1;s=ADC.Channel0)
 
-
-
-   Example output from './stress-test.sh -c 10 -e 192.168.1.104:4840':
-   >======================================================================
-   >             OPC UA Multi-Client Parallel Benchmark Tool               
-   >======================================================================
+   Example output from:
+```bash
+   './stress-test.sh -c 10 -e 192.168.1.104:4840'
+```
+   >=================================================================
+   >        OPC UA Multi-Client Parallel Benchmark Tool               
+   >=================================================================
    >  Target Endpoint : opc.tcp://192.168.1.104:4840                 
    >  Target Node ID  : ns=1;s=ADC.Channel0                     
    >  Active Clients  : 10 parallel workers
-   >----------------------------------------------------------------------
+   >-----------------------------------------------------------------
    >  Throughput      : [░░░░░░░░░░░░░░░░░░░░]    0.0 req/sec
    >  Avg Latency     : 1559 ms / read
    >  Total Requests  : 156    (OK: 156   | ERR: 0    )
-   >----------------------------------------------------------------------
+   >-----------------------------------------------------------------
    >  Press [Q] or Ctrl+C to stop...
    > 
-   > Benchmark stopped.
-   > 
+   > Benchmark stopped. 
 
 🤝 Contributing & License
 This project is built for the community. Fork it, improve it, use it in your factories, and submit pull requests.
