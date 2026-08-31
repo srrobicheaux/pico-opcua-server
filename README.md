@@ -78,22 +78,14 @@ Hold the BOOTSEL button on your Pico 2W, plug it into your USB port. The build s
    cat /dev/ttyACM0:
    '''
    > ===	Pico Universal Access	===
-
-   > 	WiFi
-   
-   > 	SNTP
-   
-   > 	OPC UAS
-   
+   >  WiFi  
+   >  SNTP
+   >  OPC UAS
    > 
    > wifi_task:	 Connecting to 'SSID' ... (result=0 link=3 ip=192.168.1.104) 
-   > 
    > wifi_task:	 Wi-Fi OK. 
-   > 
    > sntp_task:	 Setting time via SNTP ... 
-   > 
    > SNTP synced to (UTC): Mon Aug 31 02:13:52 2026
-   > 
    > opc_task:	 OPC Server Starting... online.
 
 
