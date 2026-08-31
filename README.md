@@ -110,69 +110,55 @@ The project contains multiple bash scripts for testing the robustness of your op
 
    *Note: We reduced the FreeRTOS task delay in the main OPC loop to 1ms to significantly boost transaction speeds over the standard 10ms FreeRTOS tick.*
 ```bash
-   readrate.sh
+   readrate.sh -e [your_IP_address]
 ```
 
    Example:
    './readrate.sh -e opc.tcp://192.168.1.104'
-      > === Starting OPC UA Throughput Test ===
-      > 
-      > Target: opc.tcp://192.168.1.104:4840
-      > 
-      > Duration: 10 seconds
-      > 
-      > 
-      > Connecting to opc.tcp://192.168.1.104:4840...
-      > 
-      > Requested session timeout to be 600000ms, got 10000ms instead
-      > 
-      > Connected! Polling Server.WiFi_RSSI and ADC Channel 0...
-      > 
-      > 
-      > --- Benchmark Results ---
-      > 
-      > Total Requests: 1096
-      > 
-      > Duration: 10.00 seconds
-      > 
-      > Throughput: 109.60 requests/sec
-
+   > === Starting OPC UA Throughput Test ===
+   > Target: opc.tcp://192.168.1.104:4840
+   > Duration: 10 seconds
+   > 
+   > Connecting to opc.tcp://192.168.1.104:4840...
+   > Requested session timeout to be 600000ms, got 10000ms instead
+   > Connected! Polling Server.WiFi_RSSI and ADC Channel 0...
+   > 
+   > --- Benchmark Results ---
+   > Total Requests: 1096
+   > Duration: 10.00 seconds
+   > Throughput: 109.60 requests/sec
 
    ### Stress Testing
    Also included is a full-blown, multi-threaded dashboard benchmark script with ASCII gauges and live metrics tracking!
 
+```bash
    ./stress-test.sh -e [your_IP_address]
-
-      > Usage: ./readrate.sh [options].
-      > 
-      > Options:
-      > 
-      >   -c, --clients <num>    Number of concurrent parallel clients (default: 4)
-      > 
-      >   -v, --verbose          Enable verbose response output from workers
-      >  
-      >   -e, --endpoint <url>   OPC UA endpoint IP:Port (default: 192.168.1.104:4840)
-      > 
-      >   -n, --node <node_id>   Target Node ID (default: ns=1;s=ADC.Channel0)
+```
+   > Usage: ./readrate.sh [options].
+   > Options:
+   >   -c, --clients <num>    Number of concurrent parallel clients (default: 4)
+   >   -v, --verbose          Enable verbose response output from workers
+   >   -e, --endpoint <url>   OPC UA endpoint IP:Port (default: 192.168.1.104:4840)
+   >   -n, --node <node_id>   Target Node ID (default: ns=1;s=ADC.Channel0)
 
 
 
-      Example output from './stress-test.sh -c 10 -e 192.168.1.104:4840':
-      > ======================================================================
-      >             OPC UA Multi-Client Parallel Benchmark Tool               
-      > ======================================================================
-      >  Target Endpoint : opc.tcp://192.168.1.104:4840                 
-      >  Target Node ID  : ns=1;s=ADC.Channel0                     
-      >  Active Clients  : 10 parallel workers
-      > ----------------------------------------------------------------------
-      >  Throughput      : [░░░░░░░░░░░░░░░░░░░░]    0.0 req/sec
-      >  Avg Latency     : 1559 ms / read
-      >  Total Requests  : 156    (OK: 156   | ERR: 0    )
-      > ----------------------------------------------------------------------
-      >  Press [Q] or Ctrl+C to stop...
-      > 
-      > Benchmark stopped.
-      > 
+   Example output from './stress-test.sh -c 10 -e 192.168.1.104:4840':
+   >======================================================================
+   >             OPC UA Multi-Client Parallel Benchmark Tool               
+   >======================================================================
+   >  Target Endpoint : opc.tcp://192.168.1.104:4840                 
+   >  Target Node ID  : ns=1;s=ADC.Channel0                     
+   >  Active Clients  : 10 parallel workers
+   >----------------------------------------------------------------------
+   >  Throughput      : [░░░░░░░░░░░░░░░░░░░░]    0.0 req/sec
+   >  Avg Latency     : 1559 ms / read
+   >  Total Requests  : 156    (OK: 156   | ERR: 0    )
+   >----------------------------------------------------------------------
+   >  Press [Q] or Ctrl+C to stop...
+   > 
+   > Benchmark stopped.
+   > 
 
 🤝 Contributing & License
 This project is built for the community. Fork it, improve it, use it in your factories, and submit pull requests.
