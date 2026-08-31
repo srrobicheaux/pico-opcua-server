@@ -1,193 +1,145 @@
-# Pico Universal Access (OPC UA Server)
+# Pico Universal Access
 
-**Democratizing Industrial Automation**
-Why spend thousands of dollars on heavy, proprietary PLCs for simple edge data collection when you can embed an industrial-grade OPC UA server on a $7 Raspberry Pi Pico W? 
+**Industrial OPC UA on a $7 microcontroller.**
 
-This project provides a highly optimized, FreeRTOS-backed OPC UA server running on the RP2040. It is designed to bridge the gap between low-cost microcontrollers and enterprise SCADA/HMI systems. **Steal this with pride** and build amazing industrial integrations without the enterprise price tag.
+An open62541 OPC UA server for the Raspberry Pi Pico 2 W — FreeRTOS, lwIP, and enough headroom for real SCADA clients. Built for edge sensing and light control without proprietary PLC hardware.
 
-***You are 5 commands away froma function OPC UA Server.***
+---
 
-## 🚀 Features
+## Why this exists
 
-* **Real-Time OPC UA Server:** Built on the robust `open62541` stack.
-* **Resilient Event Loop:** Custom patched network layer to survive temporary Wi-Fi drops without shutting down the server.
-* **High Throughput:** Optimized RTOS task scheduling achieves maximum requests-per-second (req/sec) on lwIP. 
-Max 10 concurrent connections. 
-Approximately 500ms per request (roundtrip). 
-Approximately 20 requests per second throughput.
-* **Auto-Provisioning SNTP:** Automatically pulls network time on boot for accurate OPC UA timestamps.
-* **Modular Codebase:** Cleanly separated hardware abstraction and OPC handlers for easy scaling.
+Simple data collection and digital I/O should not require expensive controllers. This project puts a standards-based OPC UA endpoint on the Pico 2 W so tools like UaExpert, Ignition, or any compliant client can talk to GPIO, ADC, and onboard diagnostics over Wi-Fi.
 
-## 📡 Exposed Endpoints
-Once connected to your Wi-Fi network, the Pico exposes the following Node IDs to any standard OPC UA Client (like UaExpert or Ignition):
+---
+
+## Features
+
+- **OPC UA server** — open62541, anonymous access, SecurityPolicy None
+- **FreeRTOS + lwIP** — Wi-Fi STA, DHCP, concurrent sessions
+- **Stable listen path** — event-loop handling that keeps the server socket alive across transient network errors
+- **SNTP time sync** — correct OPC UA timestamps after boot
+- **On-device metrics** — CPU temperature, Wi-Fi RSSI, heap usage
+
+**Measured throughput** (single client, continuous read): on the order of **~100 requests/s** in the included benchmark. Concurrent clients are supported (see stress test).
+
+---
+
+## Exposed nodes
 
 | Namespace | Node ID | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `ns=1` | `ADC.Channel0` ... `2` | Read | 12-bit ADC Voltage conversions (GPIO 26-29) |
-| `ns=1` | `GPIO.0` ... `22` | Read/Write | Digital state of standard GPIO pins |
-| `ns=1` | `Server.CPU_Temperature` | Read | Internal RP2350 CPU temperature (°C) |
-| `ns=1` | `Server.WiFi_RSSI` | Read | Live Wi-Fi signal strength (dBm) |
-| `ns=1` | `Server.Memory_Allocated`| Read | FreeRTOS heap memory utilization |
+|-----------|---------|--------|-------------|
+| `ns=1` | `ADC.Channel0` … `ADC.Channel2` | Read | ADC voltage on GPIO 26–28 |
+| `ns=1` | `GPIO.0` … `GPIO.22` | Read / Write | Digital GPIO |
+| `ns=1` | `Server.CPU_Temperature` | Read | On-chip temperature (°C) |
+| `ns=1` | `Server.WiFi_RSSI` | Read | Signal strength (dBm) |
+| `ns=1` | `Server.Memory_Allocated` | Read | FreeRTOS heap usage |
 
-## 🛠️ Hardware & Prerequisites
+**Endpoint (after join):** `opc.tcp://<pico-ip>:4840`
 
-* **Hardware:** [Raspberry Pi Pico 2W](https://www.digikey.com/en/products/detail/raspberry-pi/SC1633/25862726)
-* **SDK:** [Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk)
-* **Build Tools:** CMake, ARM GCC Toolchain, git
+---
 
+## Hardware & tools
 
-## ⚙️ 1. Installation & Build
+| Item | Notes |
+|------|--------|
+| Board | [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) |
+| SDK | [pico-sdk](https://github.com/raspberrypi/pico-sdk) |
+| Host | CMake, ARM GCC (`arm-none-eabi`), git, Linux recommended for the scripts |
+
+---
+
+## Quick start
 
 ```bash
 git clone https://github.com/srrobicheaux/pico-opcua-server.git
 cd pico-opcua-server
-chmod +x ./setup.sh
-./setup.sh
+chmod +x setup.sh build.sh
+./setup.sh -s "YOUR_SSID" -p "YOUR_PASSWORD"
 ```
 
-### ./setup.sh -s [WIFI_SSID] -p [WIFI_Password]
-   ./setup.sh should be safe to run multiple times. However, it probably only needs to be run once. If it is rerun, it assumes that you want to start fresh with the dependencies and reclones them from github.
+`setup.sh` clones FreeRTOS and open62541, applies the event-loop patch, and writes a git-ignored `secrets.h`. Safe to re-run; a full re-run refreshes dependencies from GitHub.
 
-   This script pulls the FreeRTOS and open62541 dependencies and applies a custom patch to the open62541 event loop to prevent the server from exiting during transient Wi-Fi drops.
-
-   It also creates a secrets.h file for WiFi credentials.
-   *(This file is git-ignored for your security.)*
-
-   It will prompt to build once completed.
-
-## 2. Build & Flash
-### ./build.sh
-***Caution:*** *build.sh will often remove and recreate the ./build directory used by cmake.*
-
-```bash Build the project
+```bash
 ./build.sh
 ```
 
-   There is at least **500k** lines of code that will compile. Be patient. If the build fails for some reason, you can rerun ./build.sh 
-
-### Flash
-Hold the BOOTSEL button on your Pico 2W, plug it into your USB port. The build script assumes the flash will happen on **/dev/ttyACM0**.
-*(Potentialy do this while the build process continues as it will eventually attempt a flash)* 
-
-*Once flashed, it may take up to **30** seconds to display anything!*
-
-   I errored on startup speed. As such, I wait for wifi connectivity before printing anything as this is often the slowest process.
-
-   Example startup output from 
-```bash
-   cat /dev/ttyACM0
-```
-   > ===	Pico Universal Access	===
-   > 
-   > WiFi  
-   > 
-   > SNTP
-   > 
-   > OPC UAS
-   > 
-   > 
-   > wifi_task:	 Connecting to 'SSID' ... (result=0 link=3 ip=192.168.1.104) 
-   > 
-   > wifi_task:	 Wi-Fi OK. 
-   > 
-   > sntp_task:	 Setting time via SNTP ... 
-   > 
-   > SNTP synced to (UTC): Mon Aug 31 02:13:52 2026
-   > 
-   > opc_task:	 OPC Server Starting... online.
-
-
-## 3. Testing
-The project contains multiple bash scripts for testing the robustness of your opcserver. Many of these tools are based on *'opcua-cli-linux-x86_64' paired down for less dependencies.*
-*I would highly suggest using this tool instead of my scripts.*
-
-   ### ⚡ Connectivity Testing
-   *Although not part of the repo, nmap -p 4840 [Your_IP_Address] will let you know if the opcserver is responding.*
+Put the Pico 2 W into **BOOTSEL**, then flash (the script targets `/dev/ttyACM0` by default). First serial output can take up to ~30 seconds while Wi-Fi associates.
 
 ```bash
-      opcua-cli.sh 
+cat /dev/ttyACM0
 ```
 
-   Example:
-```bash
-      ./opcua-cli.sh read opc.tcp://192.168.1.104:4840 "ns=1;s=ADC.Channel0"
-```
-   >   Requested session timeout to be 600000ms, got 10000ms instead
-   >   0.567326009273529
+Example:
 
-   ### ⚡ Performance Testing
-   This repository includes a readrate.sh (throughput) script to benchmark the capabilities of the Pico W's lwIP stack under heavy OPC UA polling. 
-
-   *Note: We reduced the FreeRTOS task delay in the main OPC loop to 1ms to significantly boost transaction speeds over the standard 10ms FreeRTOS tick.*
-```bash
-   readrate.sh -e [your_IP_address]
+```text
+=== Pico Universal Access ===
+wifi_task: Connecting to 'SSID' ... (result=0 link=3 ip=192.168.1.104)
+wifi_task: Wi-Fi OK.
+sntp_task: Setting time via SNTP ...
+SNTP synced to (UTC): Mon Aug 31 02:13:52 2026
+opc_task: OPC Server Starting... online.
 ```
 
-   Example:
-```bash
-   ./readrate.sh -e opc.tcp://192.168.1.104
-```
-   > === Starting OPC UA Throughput Test ===
-   > 
-   > Target: opc.tcp://192.168.1.104:4840
-   > 
-   > Duration: 10 seconds
-   > 
-   > 
-   > Connecting to opc.tcp://192.168.1.104:4840...
-   > 
-   > Requested session timeout to be 600000ms, got 10000ms instead
-   > 
-   > Connected! Polling Server.WiFi_RSSI and ADC Channel 0...
-   > 
-   > 
-   > --- Benchmark Results ---
-   > 
-   > Total Requests: 1096
-   > 
-   > Duration: 10.00 seconds
-   > 
-   > Throughput: 109.60 requests/sec
+---
 
-   ### Stress Testing
-   Also included is a full-blown, multi-threaded dashboard benchmark script with ASCII gauges and live metrics tracking!
+## Connect a client
+
+| Setting | Value |
+|---------|--------|
+| Endpoint | `opc.tcp://<ip>:4840` |
+| Security | None / None |
+| User | Anonymous |
+
+Optional port check:
 
 ```bash
-   ./stress-test.sh -e [your_IP_address]
+nmap -p 4840 <ip>
 ```
-   > Usage: ./readrate.sh [options].
-   >
-   > Options:
-   >   -c, --clients <num>    Number of concurrent parallel clients (default: 4)
-   >
-   >   -v, --verbose          Enable verbose response output from workers
-   >
-   >   -e, --endpoint <url>   OPC UA endpoint IP:Port (default: 192.168.1.104:4840)
-   >
-   >   -n, --node <node_id>   Target Node ID (default: ns=1;s=ADC.Channel0)
-   >
 
-   Example output from:
+---
+
+## Tests included
+
+**Single read**
+
 ```bash
-   ./stress-test.sh -c 10 -e 192.168.1.104:4840
+./opcua-cli.sh read opc.tcp://192.168.1.104:4840 "ns=1;s=ADC.Channel0"
 ```
-   >============================================================
-   >        OPC UA Multi-Client Parallel Benchmark Tool
-   >============================================================
-   >  Target Endpoint : opc.tcp://192.168.1.104:4840                 
-   >  Target Node ID  : ns=1;s=ADC.Channel0                     
-   >  Active Clients  : 10 parallel workers
-   >------------------------------------------------------------
-   >  Throughput      : [░░░░░░░░░░░░░░░░░░░░]    0.0 req/sec
-   >  Avg Latency     : 1559 ms / read
-   >  Total Requests  : 156    (OK: 156   | ERR: 0    )
-   >------------------------------------------------------------
-   >  Press [Q] or Ctrl+C to stop...
-   > 
-   > Benchmark stopped. 
 
-🤝 Contributing & License
-This project is built for the community. Fork it, improve it, use it in your factories, and submit pull requests.
+**Throughput**
 
-If you use this to replace a $5,000 piece of equipment, let me know!
-EOF
+```bash
+./readrate.sh -e opc.tcp://192.168.1.104
+```
+
+**Multi-client stress**
+
+```bash
+./stress-test.sh -c 10 -e 192.168.1.104:4840
+```
+
+Scripts lean on a lightweight OPC UA CLI; for day-to-day work, UaExpert or your preferred client is fine.
+
+---
+
+## Project layout (high level)
+
+| Path / script | Role |
+|---------------|------|
+| `setup.sh` | Dependencies, patch, `secrets.h` |
+| `build.sh` | Configure, build, optional flash |
+| Application sources | Wi-Fi, SNTP, OPC task, node map |
+| open62541 (patched) | Server stack + resilient TCP listen handling |
+
+---
+
+## License & contributing
+
+Open for the community: fork, adapt, and use in the field. Pull requests welcome.
+
+If this displaces a rack of proprietary gear for a simple job, that is the point.
+
+---
+
+**Repository:** [github.com/srrobicheaux/pico-opcua-server](https://github.com/srrobicheaux/pico-opcua-server)
+```
