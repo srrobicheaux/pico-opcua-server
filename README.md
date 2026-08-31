@@ -58,7 +58,7 @@ chmod +x ./setup.sh
 #### Build
 ***Caution:*** *build.sh will often remove and recreate the ./build directory used by cmake.*
 
-````bash
+```bash Build the project
 ./build.sh
 ```
 
