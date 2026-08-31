@@ -1,26 +1,38 @@
 # Pico Universal Access
 
-**Industrial OPC UA on a $7 microcontroller.**
+**Get started with OPC UA for under $10.**
 
-An open62541 OPC UA server for the Raspberry Pi Pico 2 W — FreeRTOS, lwIP, and enough headroom for real SCADA clients. Built for edge sensing and light control without proprietary PLC hardware.
+An industrial-style OPC UA server on the Raspberry Pi Pico 2 W — open62541, FreeRTOS, and Wi-Fi — so you can experiment with real clients (UaExpert, Ignition, custom tools) without a PLC budget.
+
+Hardware cost is on the order of a Pico 2 W board (~$7). Software is open source.
+
+**Repository:** [github.com/srrobicheaux/pico-opcua-server](https://github.com/srrobicheaux/pico-opcua-server)
 
 ---
 
 ## Why this exists
 
-Simple data collection and digital I/O should not require expensive controllers. This project puts a standards-based OPC UA endpoint on the Pico 2 W so tools like UaExpert, Ignition, or any compliant client can talk to GPIO, ADC, and onboard diagnostics over Wi-Fi.
+OPC UA is the standard language of modern SCADA and HMI systems, but trying it often means expensive hardware or heavy PCs. This project puts a working server on a microcontroller you can hold in two fingers: GPIO, ADC, temperature, Wi-Fi signal, and heap stats — all as OPC UA nodes.
+
+Aimed at:
+
+- Controls and OT engineers exploring edge OPC UA
+- Students and educators
+- OEMs and makers who need a cheap, standards-based endpoint for demos and prototypes
+
+It is **not** a replacement for a plant DCS or safety PLC. It **is** a fast way to learn, prototype, and instrument simple systems.
 
 ---
 
 ## Features
 
-- **OPC UA server** — open62541, anonymous access, SecurityPolicy None
-- **FreeRTOS + lwIP** — Wi-Fi STA, DHCP, concurrent sessions
-- **Stable listen path** — event-loop handling that keeps the server socket alive across transient network errors
-- **SNTP time sync** — correct OPC UA timestamps after boot
-- **On-device metrics** — CPU temperature, Wi-Fi RSSI, heap usage
+- **OPC UA server** — open62541, anonymous login, SecurityPolicy None (lab / LAN use)
+- **FreeRTOS + lwIP** — Wi-Fi station mode, DHCP, concurrent sessions
+- **Resilient listen path** — event-loop handling that keeps the server socket alive across transient network errors
+- **SNTP time sync** — sensible OPC UA timestamps after boot
+- **On-device metrics** — CPU temperature, Wi-Fi RSSI, FreeRTOS heap usage
 
-**Measured throughput** (single client, continuous read): on the order of **~100 requests/s** in the included benchmark. Concurrent clients are supported (see stress test).
+**Measured throughput** (included single-client benchmark): on the order of **~100 requests/s**. Multi-client stress scripts are included.
 
 ---
 
@@ -34,7 +46,18 @@ Simple data collection and digital I/O should not require expensive controllers.
 | `ns=1` | `Server.WiFi_RSSI` | Read | Signal strength (dBm) |
 | `ns=1` | `Server.Memory_Allocated` | Read | FreeRTOS heap usage |
 
-**Endpoint (after join):** `opc.tcp://<pico-ip>:4840`
+**Endpoint after Wi-Fi join:** `opc.tcp://<pico-ip>:4840`
+
+---
+
+## Security notice (read this)
+
+This build is intended for **trusted networks, labs, and demos**:
+
+- Security policy: **None**
+- Authentication: **Anonymous**
+
+Do **not** expose it to the public internet or to untrusted plant networks without hardening (encryption, user auth, network isolation). Production OT deployments need proper security design; this project prioritizes learning and accessibility first.
 
 ---
 
@@ -42,9 +65,9 @@ Simple data collection and digital I/O should not require expensive controllers.
 
 | Item | Notes |
 |------|--------|
-| Board | [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) |
+| Board | [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) (~$7) |
 | SDK | [pico-sdk](https://github.com/raspberrypi/pico-sdk) |
-| Host | CMake, ARM GCC (`arm-none-eabi`), git, Linux recommended for the scripts |
+| Host | CMake, ARM GCC (`arm-none-eabi`), git — Linux recommended for the helper scripts |
 
 ---
 
@@ -57,13 +80,13 @@ chmod +x setup.sh build.sh
 ./setup.sh -s "YOUR_SSID" -p "YOUR_PASSWORD"
 ```
 
-`setup.sh` clones FreeRTOS and open62541, applies the event-loop patch, and writes a git-ignored `secrets.h`. Safe to re-run; a full re-run refreshes dependencies from GitHub.
+`setup.sh` fetches FreeRTOS and open62541, applies the event-loop patch, and writes a git-ignored `secrets.h`. Re-running is safe; a full re-run refreshes dependencies from GitHub.
 
 ```bash
 ./build.sh
 ```
 
-Put the Pico 2 W into **BOOTSEL**, then flash (the script targets `/dev/ttyACM0` by default). First serial output can take up to ~30 seconds while Wi-Fi associates.
+Hold **BOOTSEL**, plug in the Pico, and flash (default device `/dev/ttyACM0`). First useful serial output can take up to ~30 seconds while Wi-Fi associates.
 
 ```bash
 cat /dev/ttyACM0
@@ -90,7 +113,7 @@ opc_task: OPC Server Starting... online.
 | Security | None / None |
 | User | Anonymous |
 
-Optional port check:
+Optional:
 
 ```bash
 nmap -p 4840 <ip>
@@ -118,11 +141,11 @@ nmap -p 4840 <ip>
 ./stress-test.sh -c 10 -e 192.168.1.104:4840
 ```
 
-Scripts lean on a lightweight OPC UA CLI; for day-to-day work, UaExpert or your preferred client is fine.
+For day-to-day browsing, UaExpert or any compliant OPC UA client works well.
 
 ---
 
-## Project layout (high level)
+## Project layout
 
 | Path / script | Role |
 |---------------|------|
@@ -133,13 +156,22 @@ Scripts lean on a lightweight OPC UA CLI; for day-to-day work, UaExpert or your 
 
 ---
 
-## License & contributing
+## GitHub discovery tips
 
-Open for the community: fork, adapt, and use in the field. Pull requests welcome.
+If you fork or star related work, these **topics** help others find Pico + OPC UA projects:
 
-If this displaces a rack of proprietary gear for a simple job, that is the point.
+`opc-ua` · `open62541` · `raspberry-pi-pico` · `pico-2-w` · `rp2350` · `freertos` · `lwip` · `industrial-iot` · `scada` · `edge-computing`
+
+Add a short **About** description on the repo (e.g. *OPC UA server on Raspberry Pi Pico 2 W*) and a clear **LICENSE** file (MIT is a common choice for this kind of project).
 
 ---
 
-**Repository:** [github.com/srrobicheaux/pico-opcua-server](https://github.com/srrobicheaux/pico-opcua-server)
-```
+## License & contributing
+
+Community project: fork it, adapt it, use it in the lab or on the bench. Pull requests welcome.
+
+Please add an explicit license file to the repository if one is not already present, so companies and educators know how they may use the code.
+
+---
+
+**Under $10. Real OPC UA. Your network, your nodes.**
