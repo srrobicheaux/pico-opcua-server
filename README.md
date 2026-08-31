@@ -169,9 +169,5 @@ Add a short **About** description on the repo (e.g. *OPC UA server on Raspberry 
 ## License & contributing
 
 Community project: fork it, adapt it, use it in the lab or on the bench. Pull requests welcome.
-
-Please add an explicit license file to the repository if one is not already present, so companies and educators know how they may use the code.
-
----
-
+[MIT License](./LICENSE)
 **Under $10. Real OPC UA. Your network, your nodes.**
