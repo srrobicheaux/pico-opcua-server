@@ -59,10 +59,10 @@ chmod +x ./setup.sh
 ***Caution:*** *build.sh will often remove and recreate the ./build directory used by cmake.*
 
 ````bash
-./build.sh```
+./build.sh
+```
 
-There is at least **500k** lines of code that will compile. Be patient. 
-If the build fails for some reason, you can rerun ./build.sh 
+There is at least **500k** lines of code that will compile. Be patient. If the build fails for some reason, you can rerun ./build.sh 
 
 #### Flash
 Hold the BOOTSEL button on your Pico 2W, plug it into your USB port.The build script assumes the flash will happen on **/dev/ttyACM0**.
