@@ -30,8 +30,11 @@ if [ -f "secrets.h" ]; then
 else
     if [ -n "$WIFI_SSID" ] && [ -n "$WIFI_PASSWORD" ]; then
         echo "Generating secrets.h from command-line arguments..."
-        echo "#define WIFI_SSID       \"$WIFI_SSID\"" > secrets.h
+        echo "#ifndef SECRETS_H" > secrets.h
+        echo "#define SECRETS_H" >> secrets.h
+        echo "#define WIFI_SSID       \"$WIFI_SSID\"" >> secrets.h
         echo "#define WIFI_PASSWORD   \"$WIFI_PASSWORD\"" >> secrets.h
+        echo "#endif" >> secrets.h
     else
         echo "Error: secrets.h is missing and Wi-Fi credentials were not provided."
         echo "Usage: ./setup.sh -s <SSID> -p <PASSWORD>"
@@ -96,3 +99,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "Error: build.sh not found in the current directory."
     fi
 fi
+
+echo "After your pico2w is flashed, it will take up 30 seconds to responde with anything."
+echo "This is to shorten start time by connecting to WiFi before anythign else."
+echo "LED will start to blink when output starts."

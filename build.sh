@@ -79,8 +79,6 @@ fi
 # Check if minicom is already running
 if pgrep -x "minicom" > /dev/null; then
     echo "minicom is running in the background. Skipping 'cat $PORT'."
-    sleep 20
-    nmap -p 4840 192.168.86.22
 else
     echo "Connecting to $PORT... Press Ctrl+C to stop."
     sleep 1
