@@ -75,7 +75,7 @@ Hold the BOOTSEL button on your Pico 2W, plug it into your USB port. The build s
 
    Example startup output from 
 ```bash
-   cat /dev/ttyACM0:
+   cat /dev/ttyACM0
 ```
    > ===	Pico Universal Access	===
    > WiFi  
@@ -96,8 +96,9 @@ The project contains multiple bash scripts for testing the robustness of your op
    ### ⚡ Connectivity Testing
    *Although not part of the repo, nmap -p 4840 [Your_IP_Address] will let you know if the opcserver is responding.*
 
+```bash
       opcua-cli.sh 
-
+```
    Example:
       './opcua-cli.sh read opc.tcp://192.168.1.104:4840 "ns=1;s=ADC.Channel0"'
       
@@ -108,12 +109,12 @@ The project contains multiple bash scripts for testing the robustness of your op
    This repository includes a readrate.sh (throughput) script to benchmark the capabilities of the Pico W's lwIP stack under heavy OPC UA polling. 
 
    *Note: We reduced the FreeRTOS task delay in the main OPC loop to 1ms to significantly boost transaction speeds over the standard 10ms FreeRTOS tick.*
-
+```bash
    readrate.sh
+```
 
-      Example:
-      './readrate.sh -e opc.tcp://192.168.1.104'
-      > 
+   Example:
+   './readrate.sh -e opc.tcp://192.168.1.104'
       > === Starting OPC UA Throughput Test ===
       > 
       > Target: opc.tcp://192.168.1.104:4840
