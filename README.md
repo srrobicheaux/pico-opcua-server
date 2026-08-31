@@ -78,14 +78,22 @@ Hold the BOOTSEL button on your Pico 2W, plug it into your USB port. The build s
    cat /dev/ttyACM0
 ```
    > ===	Pico Universal Access	===
+   > 
    > WiFi  
+   > 
    > SNTP
+   > 
    > OPC UAS
    > 
+   > 
    > wifi_task:	 Connecting to 'SSID' ... (result=0 link=3 ip=192.168.1.104) 
+   > 
    > wifi_task:	 Wi-Fi OK. 
+   > 
    > sntp_task:	 Setting time via SNTP ... 
+   > 
    > SNTP synced to (UTC): Mon Aug 31 02:13:52 2026
+   > 
    > opc_task:	 OPC Server Starting... online.
 
 
@@ -99,11 +107,13 @@ The project contains multiple bash scripts for testing the robustness of your op
 ```bash
       opcua-cli.sh 
 ```
+
    Example:
-      './opcua-cli.sh read opc.tcp://192.168.1.104:4840 "ns=1;s=ADC.Channel0"'
-      
-      Requested session timeout to be 600000ms, got 10000ms instead
-      0.567326009273529
+```bash
+      ./opcua-cli.sh read opc.tcp://192.168.1.104:4840 "ns=1;s=ADC.Channel0"
+```
+   >   Requested session timeout to be 600000ms, got 10000ms instead
+   >   0.567326009273529
 
    ### ⚡ Performance Testing
    This repository includes a readrate.sh (throughput) script to benchmark the capabilities of the Pico W's lwIP stack under heavy OPC UA polling. 
