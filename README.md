@@ -73,7 +73,8 @@ Hold the BOOTSEL button on your Pico 2W, plug it into your USB port. The build s
 
    I errored on startup speed. As such, I wait for wifi connectivity before printing anything as this is often the slowest process.
 
-   Example startup output from cat /dev/ttyACM0:
+   Example startup output from 
+      cat /dev/ttyACM0:
 
    > ===	Pico Universal Access	===
    > 	WiFi
