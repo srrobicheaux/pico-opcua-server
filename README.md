@@ -1,9 +1,11 @@
 # Pico Universal Access (OPC UA Server)
 
-## Democratizing Industrial Automation
+**Democratizing Industrial Automation**
 Why spend thousands of dollars on heavy, proprietary PLCs for simple edge data collection when you can embed an industrial-grade OPC UA server on a $7 Raspberry Pi Pico W? 
 
 This project provides a highly optimized, FreeRTOS-backed OPC UA server running on the RP2040. It is designed to bridge the gap between low-cost microcontrollers and enterprise SCADA/HMI systems. **Steal this with pride** and build amazing industrial integrations without the enterprise price tag.
+
+***You are 5 commands away froma function OPC UA Server.***
 
 ## 🚀 Features
 
@@ -33,29 +35,29 @@ Once connected to your Wi-Fi network, the Pico exposes the following Node IDs to
 * **SDK:** [Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk)
 * **Build Tools:** CMake, ARM GCC Toolchain, git
 
-## ⚙️ Usage: **Clone => Setup => Build => Flash => Test**
 
-### 1. Clone & Setup
+## ⚙️ 1. Installation & Build
 
-#### ./setup.sh
-./setup.sh should be safe to run multiple times. However, it probably only needs to be run once. If it is rerun, it assumes that you want to start fresh with the dependencies and reclones them from github.
-
-This script pulls the FreeRTOS and open62541 dependencies and applies a custom patch to the open62541 event loop to prevent the server from exiting during transient Wi-Fi drops.
-
-It also creates a secrets.h file for WiFi credentials.
-*(This file is git-ignored for your security.)*
-
-It will prompt to build once completed.
-=== Installing and setting up via ./setup.sh
-   ```bash
+```bash
 git clone https://github.com/srrobicheaux/pico-opcua-server.git
 cd pico-opcua-server
 chmod +x ./setup.sh
 ./setup.sh
 ```
 
-### 2. Build & Flash
-#### Build
+### ./setup.sh -s [WIFI_SSID] -p [WIFI_Password]
+-[./setup.sh should be safe to run multiple times. However, it probably only needs to be run once. If it is rerun, it assumes that you want to start fresh with the dependencies and reclones them from github.
+
+This script pulls the FreeRTOS and open62541 dependencies and applies a custom patch to the open62541 event loop to prevent the server from exiting during transient Wi-Fi drops.
+
+It also creates a secrets.h file for WiFi credentials.
+*(This file is git-ignored for your security.)*
+
+It will prompt to build once completed.]
+
+
+## 2. Build & Flash
+### ./build.sh
 ***Caution:*** *build.sh will often remove and recreate the ./build directory used by cmake.*
 
 ```bash Build the project
@@ -64,7 +66,7 @@ chmod +x ./setup.sh
 
 There is at least **500k** lines of code that will compile. Be patient. If the build fails for some reason, you can rerun ./build.sh 
 
-#### Flash
+### Flash
 Hold the BOOTSEL button on your Pico 2W, plug it into your USB port.The build script assumes the flash will happen on **/dev/ttyACM0**.
 *(Potentialy doing this while the build process continues as it will eventually attempt a flash)* 
 
@@ -142,21 +144,21 @@ Also included is a full-blown, multi-threaded dashboard benchmark script with AS
 
 ./stress-test.sh -e [your_IP_address]
 
-Usage: ./readrate.sh [options].
+> Usage: ./readrate.sh [options].
+> 
+> Options:
+> 
+>   -c, --clients <num>    Number of concurrent parallel clients (default: 4)
+> 
+>   -v, --verbose          Enable verbose response output from workers
+>  
+>   -e, --endpoint <url>   OPC UA endpoint IP:Port (default: 192.168.1.104:4840)
+> 
+>   -n, --node <node_id>   Target Node ID (default: ns=1;s=ADC.Channel0)
 
-Options:
-
-  -c, --clients <num>    Number of concurrent parallel clients (default: 4)
-
-  -v, --verbose          Enable verbose response output from workers
- 
-  -e, --endpoint <url>   OPC UA endpoint IP:Port (default: 192.168.1.104:4840)
-
-  -n, --node <node_id>   Target Node ID (default: ns=1;s=ADC.Channel0)
 
 
 Example output from './stress-test.sh -c 10 -e 192.168.1.104:4840':
-
 > ======================================================================
 >             OPC UA Multi-Client Parallel Benchmark Tool               
 > ======================================================================
