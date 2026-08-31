@@ -98,13 +98,13 @@ The project contains multiple bash scripts for testing the robustness of your op
    ### ⚡ Connectivity Testing
    *Although not part of the repo, nmap -p 4840 [Your_IP_Address] will let you know if the opcserver is responding.*
 
-   opcua-cli.sh 
+      opcua-cli.sh 
 
-      Example:
+   Example:
       './opcua-cli.sh read opc.tcp://192.168.1.104:4840 "ns=1;s=ADC.Channel0"'
-      > 
-      > Requested session timeout to be 600000ms, got 10000ms instead
-      > 0.567326009273529
+      
+      Requested session timeout to be 600000ms, got 10000ms instead
+      0.567326009273529
 
    ### ⚡ Performance Testing
    This repository includes a readrate.sh (throughput) script to benchmark the capabilities of the Pico W's lwIP stack under heavy OPC UA polling. 
