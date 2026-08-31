@@ -114,18 +114,29 @@ The project contains multiple bash scripts for testing the robustness of your op
 ```
 
    Example:
-   './readrate.sh -e opc.tcp://192.168.1.104'
+```bash
+   ./readrate.sh -e opc.tcp://192.168.1.104
+```
    > === Starting OPC UA Throughput Test ===
+   > 
    > Target: opc.tcp://192.168.1.104:4840
+   > 
    > Duration: 10 seconds
    > 
+   > 
    > Connecting to opc.tcp://192.168.1.104:4840...
+   > 
    > Requested session timeout to be 600000ms, got 10000ms instead
+   > 
    > Connected! Polling Server.WiFi_RSSI and ADC Channel 0...
    > 
+   > 
    > --- Benchmark Results ---
+   > 
    > Total Requests: 1096
+   > 
    > Duration: 10.00 seconds
+   > 
    > Throughput: 109.60 requests/sec
 
    ### Stress Testing
