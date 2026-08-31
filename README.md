@@ -67,10 +67,11 @@ It will prompt to build once completed.]
 There is at least **500k** lines of code that will compile. Be patient. If the build fails for some reason, you can rerun ./build.sh 
 
 ### Flash
-Hold the BOOTSEL button on your Pico 2W, plug it into your USB port.The build script assumes the flash will happen on **/dev/ttyACM0**.
-*(Potentialy doing this while the build process continues as it will eventually attempt a flash)* 
+Hold the BOOTSEL button on your Pico 2W, plug it into your USB port. The build script assumes the flash will happen on **/dev/ttyACM0**.
+*(Potentialy do this while the build process continues as it will eventually attempt a flash)* 
 
-*It may take up to **30** seconds to display anything!*
+*Once flashed, it may take up to **30** seconds to display anything!*
+
 I errored on startup speed. As such, I wait for wifi connectivity before printing anything as this is often the slowest process.
 
 Example startup output from cat /dev/ttyACM0:
